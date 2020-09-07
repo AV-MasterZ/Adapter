@@ -15,7 +15,7 @@ import java.time.Instant;
 public class RouteConfig extends RouteBuilder {
 
     @Autowired
-    private IMeteoService meteoService;
+    private IMeteoService openweathermapService;
 
     private final String serviceB = "http://localhost:8080/serviceb";
 
@@ -41,7 +41,7 @@ public class RouteConfig extends RouteBuilder {
                                 MessageA msgA = exchange.getIn().getBody(MessageA.class);
                                 if (msgA.getMsg().isEmpty()) throw new Exception();
 
-                                int currentTemp = meteoService.getCurrentTemp(exchange.getContext().createProducerTemplate(), msgA.getCoordinates(), msgA.getLng());
+                                int currentTemp = openweathermapService.getCurrentTemp(exchange.getContext().createProducerTemplate(), msgA.getCoordinates(), msgA.getLng());
 
                                 ProducerTemplate pt = exchange.getContext().createProducerTemplate();
                                 Exchange ex = pt.send("direct:adapter", exch -> {
@@ -52,7 +52,7 @@ public class RouteConfig extends RouteBuilder {
                                     exch.getIn().setBody(msgB);
                                 });
                                 Integer responseCode = ex.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
-                                if (responseCode >= 500) throw new Exception();
+                                if (responseCode != 200) throw new Exception();
                             });
 
         from("direct:adapter")
