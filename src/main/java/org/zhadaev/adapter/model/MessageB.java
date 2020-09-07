@@ -3,6 +3,8 @@ package org.zhadaev.adapter.model;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Objects;
 
 @Component
@@ -20,12 +22,13 @@ public class MessageB {
         this.txt = txt;
     }
 
-    public Instant getCreatedDt() {
-        return createdDt;
+    public String getCreatedDt() {
+        return createdDt == null ? null : createdDt.toString();
     }
 
-    public void setCreatedDt(final Instant createdDt) {
-        this.createdDt = createdDt;
+    public void setCreatedDt(final String createdDt) {
+        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(createdDt);
+        this.createdDt = Instant.from(ta);
     }
 
     public int getCurrentTemp() {
